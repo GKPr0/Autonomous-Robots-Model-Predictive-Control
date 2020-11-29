@@ -5,6 +5,7 @@ from scipy.optimize import minimize
 class ModelPredictiveControl:
     def __init__(self):
         self.horizon = 40
+        self.ideal_temp = 50
 
     def plant_model(self, u, prev_temp):
         knob_angle = u
@@ -12,7 +13,7 @@ class ModelPredictiveControl:
         knob_temp = knob_angle * 0.5
         # Calculate dT or change in temperature.
         tau = 6
-        dT = 0
+        dT = (knob_temp - prev_temp)/tau
         # new temp = current temp + change in temp.
         return prev_temp + dT 
 
@@ -21,7 +22,7 @@ class ModelPredictiveControl:
         temp = 0.0
         for i in range(0, self.horizon):
             temp = self.plant_model(u[i], temp)
-
+            cost += abs(temp - self.ideal_temp)
         return cost
 
 
